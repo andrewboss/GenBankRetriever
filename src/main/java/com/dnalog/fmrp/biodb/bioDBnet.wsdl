@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<definitions xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="urn:bioDBnet" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:bioDBnet">
+
+<types>
+<xsd:schema targetNamespace="urn:bioDBnet">
+ <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+ <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+
+ <xsd:complexType name="db2dbParams">
+  <xsd:all>
+   <xsd:element name="input" type="xsd:string"/>
+   <xsd:element name="taxonId" type="xsd:string"/>
+   <xsd:element name="inputValues" type="xsd:string"/>
+   <xsd:element name="outputs" type="xsd:string"/>
+  </xsd:all>
+ </xsd:complexType>
+
+ <xsd:complexType name="dbReportParams">
+  <xsd:all>
+   <xsd:element name="input" type="xsd:string"/>
+   <xsd:element name="taxonId" type="xsd:string"/>
+   <xsd:element name="inputValues" type="xsd:string"/>
+  </xsd:all>
+ </xsd:complexType>
+
+ <xsd:complexType name="dbFindParams">
+  <xsd:all>
+   <xsd:element name="output" type="xsd:string"/>
+   <xsd:element name="taxonId" type="xsd:string"/>
+   <xsd:element name="inputValues" type="xsd:string"/>
+  </xsd:all>
+ </xsd:complexType>
+
+ <xsd:complexType name="dbWalkParams">
+  <xsd:all>
+   <xsd:element name="dbPath" type="xsd:string"/>
+   <xsd:element name="taxonId" type="xsd:string"/>
+   <xsd:element name="inputValues" type="xsd:string"/>
+  </xsd:all>
+ </xsd:complexType>
+
+ <xsd:complexType name="dbOrthoParams">
+  <xsd:all>
+   <xsd:element name="input" type="xsd:string"/>
+   <xsd:element name="output" type="xsd:string"/>
+   <xsd:element name="inputTaxon" type="xsd:string"/>
+   <xsd:element name="outputTaxon" type="xsd:string"/>
+   <xsd:element name="inputValues" type="xsd:string"/>
+  </xsd:all>
+ </xsd:complexType>
+
+</xsd:schema>
+</types>
+
+<message name="getInputsRequest"></message>
+<message name="getInputsResponse">
+  <part name="return" type="xsd:string" /></message>
+<message name="getOutputsForInputRequest">
+  <part name="input" type="xsd:string" /></message>
+<message name="getOutputsForInputResponse">
+  <part name="return" type="xsd:string" /></message>
+<message name="getDirectOutputsForInputRequest">
+  <part name="input" type="xsd:string" /></message>
+<message name="getDirectOutputsForInputResponse">
+  <part name="return" type="xsd:string" /></message>
+<message name="db2dbRequest">
+  <part name="db2dbParams" type="tns:db2dbParams" /></message>
+<message name="db2dbResponse">
+  <part name="return" type="xsd:string" /></message>
+<message name="dbReportRequest">
+  <part name="dbReportParams" type="tns:dbReportParams" /></message>
+<message name="dbReportResponse">
+  <part name="return" type="xsd:string" /></message>
+<message name="dbFindRequest">
+  <part name="dbFindParams" type="tns:dbFindParams" /></message>
+<message name="dbFindResponse">
+  <part name="return" type="xsd:string" /></message>
+<message name="dbWalkRequest">
+  <part name="dbWalkParams" type="tns:dbWalkParams" /></message>
+<message name="dbWalkResponse">
+  <part name="return" type="xsd:string" /></message>
+<message name="dbOrthoRequest">
+  <part name="dbOrthoParams" type="tns:dbOrthoParams" /></message>
+<message name="dbOrthoResponse">
+  <part name="return" type="xsd:string" /></message>
+
+<portType name="bioDBnetPortType">
+
+  <operation name="getInputs">
+    <documentation>Gets all possible bioDBnet input identifiers</documentation>
+    <input message="tns:getInputsRequest"/>
+    <output message="tns:getInputsResponse"/>
+  </operation>
+
+  <operation name="getOutputsForInput">
+    <documentation>Gets all the outputs for an input identifier</documentation>
+    <input message="tns:getOutputsForInputRequest"/>
+    <output message="tns:getOutputsForInputResponse"/>
+  </operation>
+
+  <operation name="getDirectOutputsForInput">
+    <documentation>Gets all the direct path outputs for an input identifier</documentation>
+    <input message="tns:getDirectOutputsForInputRequest"/>
+    <output message="tns:getDirectOutputsForInputResponse"/>
+  </operation>
+
+  <operation name="db2db">
+    <documentation>bioDBnet db2db - biological identifier conversions</documentation>
+    <input message="tns:db2dbRequest"/>
+    <output message="tns:db2dbResponse"/>
+  </operation>
+
+  <operation name="dbReport">
+    <documentation>bioDBnet dbReport - detailed annotation reports</documentation>
+    <input message="tns:dbReportRequest"/>
+    <output message="tns:dbReportResponse"/>
+  </operation>
+
+  <operation name="dbFind">
+    <documentation>bioDBnet dbFind - Finds the type of biological identifiers</documentation>
+    <input message="tns:dbFindRequest"/>
+    <output message="tns:dbFindResponse"/>
+  </operation>
+
+  <operation name="dbWalk">
+    <documentation>bioDBnet dbWalk - biological identifier conversions following custom paths</documentation>
+    <input message="tns:dbWalkRequest"/>
+    <output message="tns:dbWalkResponse"/>
+  </operation>
+
+  <operation name="dbOrtho">
+    <documentation>bioDBnet dbOrtho - identifier conversions across species</documentation>
+    <input message="tns:dbOrthoRequest"/>
+    <output message="tns:dbOrthoResponse"/>
+  </operation>
+
+</portType>
+
+<binding name="bioDBnetBinding" type="tns:bioDBnetPortType">
+  <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+  <operation name="getInputs">
+    <soap:operation soapAction="urn:bioDBnet#getInputs" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+  <operation name="getOutputsForInput">
+    <soap:operation soapAction="urn:bioDBnet#getOutputsForInput" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+  <operation name="getDirectOutputsForInput">
+    <soap:operation soapAction="urn:bioDBnet#getDirectOutputsForInput" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+  <operation name="db2db">
+    <soap:operation soapAction="urn:bioDBnet#db2db" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+  <operation name="dbReport">
+    <soap:operation soapAction="urn:bioDBnet#dbReport" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+  <operation name="dbFind">
+    <soap:operation soapAction="urn:bioDBnet#dbFind" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+  <operation name="dbWalk">
+    <soap:operation soapAction="urn:bioDBnet#dbWalk" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+  <operation name="dbOrtho">
+    <soap:operation soapAction="urn:bioDBnet#dbOrtho" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:bioDBnet" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+
+</binding>
+
+<service name="bioDBnet">
+  <port name="bioDBnetPort" binding="tns:bioDBnetBinding">
+    <soap:address location="http://biodbnet.abcc.ncifcrf.gov/webServices/biodbnetSoapServer.php?debug=1"/>
+  </port>
+</service>
+
+</definitions>
+
