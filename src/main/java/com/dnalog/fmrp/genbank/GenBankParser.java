@@ -13,7 +13,7 @@ public class GenBankParser {
 	public GenBankParser() {
 	}
 	
-	public void connect(String url) throws IOException {
+	public void connect(String url) throws Exception {
 		HTTPBrowser httpClient = new HTTPBrowser();
 		this.html = httpClient.getHTML(url);
 	}
@@ -21,7 +21,7 @@ public class GenBankParser {
 	public String extractUID() throws Exception {
 		
 		String result = "";
-		Pattern UID_PATTERN = Pattern.compile("<input name=\"EntrezSystem2.PEntrez.Nuccore.Sequence_ResultsPanel.Sequence_DisplayBar.uid\" sid=\"1\" type=\"hidden\" value=\"(\\d+)\" />");
+		Pattern UID_PATTERN = Pattern.compile("<input name=\"EntrezSystem2.PEntrez.[a-zA-Z0-9]+.Sequence_ResultsPanel.Sequence_DisplayBar.uid\" sid=\"1\" type=\"hidden\" value=\"(\\d+)\" />");
 		
 		Matcher m = UID_PATTERN.matcher(html);
 		

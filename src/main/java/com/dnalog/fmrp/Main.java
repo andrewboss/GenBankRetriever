@@ -9,8 +9,14 @@ import java.util.regex.Pattern;
 
 import com.dnalog.fmrp.biodb.BioDBnetImpl;
 import com.dnalog.fmrp.genbank.GenBankParser;
+import com.dnalog.fmrp.google.GoogleBigQueryClient;
+import com.dnalog.fmrp.google.GoogleClientCredentials;
 import com.dnalog.fmrp.google.GoogleDriveParser;
 import com.dnalog.fmrp.google.GoogleSpreadsheetClient;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.services.bigquery.Bigquery;
+import com.google.api.services.bigquery.model.Job;
+import com.google.api.services.bigquery.model.JobReference;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
@@ -210,33 +216,19 @@ public class Main {
             }
         } else if(action.equals("findest")) {
 
-            SpreadsheetEntry spreadsheet = gSpreadsheets.getSpreadsheet(prop.getProperty("GOOGLE_MASTER_SPREADSHEET"));
-            WorksheetEntry worksheet = gSpreadsheets.getWorksheet(spreadsheet, 0);
-            List<ListEntry> rows = (List<ListEntry>)gSpreadsheets.getRows(worksheet, "ID");
+            String projectId = prop.get("GOOGLE_BIGQUERY_PROJECT_ID").toString();
+            String tableName = prop.get("GOOGLE_BIGQUERY_SEQUENCES_TABLE").toString();
 
-            for (ListEntry row : rows) {
+            Bigquery bigQ = GoogleBigQueryClient.createClient(GoogleClientCredentials.authorize(
+                    GoogleClientCredentials.loadClientSecrets(prop.get("GOOGLE_TOKEN_PATH").toString()),
+                    GoogleClientCredentials.loadScopes("BigQuery")
+            ));
 
-                int rowID = Integer.parseInt(gSpreadsheets.getValue(row, "ID"));
-                String accessionID = (String)gSpreadsheets.getValue(row, "AccessionID");
-                String est = (String)gSpreadsheets.getValue(row, "EST");
-                System.out.println("Processing sequence with ID: " + rowID);
+            JobReference jobRef = GoogleBigQueryClient.startQuery(bigQ, projectId, "SELECT * FROM " + tableName + " LIMIT 10");
+            Job completedJob = GoogleBigQueryClient.checkQueryResults(bigQ, projectId, jobRef);
 
-                BioDBnetImpl bioDBClient = new BioDBnetImpl();
-
-                String db2dbResult = bioDBClient.db2db("GenBank Nucleotide Accession", accessionID, "Ensembl Transcript ID", "");
-
-                Pattern p = Pattern.compile(".*\\s+(ENST.*)\\s+");
-                Matcher m = p.matcher(db2dbResult);
-
-                if (m.find()) {
-                    System.out.println("Found EST: " + m.group(1));
-                    System.out.println("Updating EST...");
-                    gSpreadsheets.setValue(row, "EST", m.group(1));
-                    row.update();
-                }
-
-
-            }
+            // Return and display the results of the Query Job
+            GoogleBigQueryClient.displayQueryResults(bigQ, projectId, completedJob);
         }
 	}
 }

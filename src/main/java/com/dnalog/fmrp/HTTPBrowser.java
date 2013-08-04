@@ -1,5 +1,14 @@
 package com.dnalog.fmrp;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,20 +41,35 @@ public class HTTPBrowser {
 	    }
 	}
 	
-	public String getHTML(String url) throws IOException {
+	public String getHTML(String url) throws Exception {
 
 		this.setURL(url);
 		
 		return this.getHTML();
 	}
 
-	public String getHTML() throws IOException {
+	public String getHTML() throws Exception {
 
-		InputStream in = this.url.openStream();
-		String result = this.convertStreamToString(in);
-		in.close();
-		
-		return result;
+        String result = "";
+
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HTTPRedirectHandler handler = new HTTPRedirectHandler();
+        httpclient.setRedirectHandler(handler);
+
+        HttpGet get = new HttpGet(url.toURI());
+
+        HttpResponse response = httpclient.execute(get);
+        HttpEntity responseEntity = response.getEntity();
+
+        if(handler.lastRedirectedUri != null) {
+            System.out.println("Redirected to: " + handler.lastRedirectedUri.toString());
+        }
+
+        if(responseEntity!=null) {
+            result = EntityUtils.toString(responseEntity);
+        }
+
+        return result;
 	}
 	
 	public void saveAsFile(String url, String fullFilePath) throws Exception {
@@ -58,19 +82,30 @@ public class HTTPBrowser {
 	public void saveAsFile(String fullFilePath) throws Exception {
 
 		File output = new File(fullFilePath);
+
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HTTPRedirectHandler handler = new HTTPRedirectHandler();
+        httpclient.setRedirectHandler(handler);
+
+        HttpGet get = new HttpGet(url.toURI());
+
+        HttpResponse response = httpclient.execute(get);
+
+        if(handler.lastRedirectedUri != null) {
+            System.out.println("Redirected to: " + handler.lastRedirectedUri.toString());
+        }
 		
-		
-		InputStream in = this.url.openStream();
+		//InputStream in = this.url.openStream();
 
 		try {
 			OutputStream out = new FileOutputStream(output);
 			try {
-				copy(in, out);
+				copy(response.getEntity().getContent(), out);
 			} finally {
 				out.close();
 			}
 		} finally {
-			in.close();
+			//in.close();
 		}
 	}
 
